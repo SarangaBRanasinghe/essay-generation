@@ -4,7 +4,7 @@ A simple essay generator built with **Next.js 15**, **Tailwind CSS**, and **Goog
 
 ## 🚀 Features
 - Generate essays using AI
-- Download essays as `.txt`
+- Download essays as `.pdf`
 - Modern UI with Tailwind CSS
 
 ## ⚙️ Installation
