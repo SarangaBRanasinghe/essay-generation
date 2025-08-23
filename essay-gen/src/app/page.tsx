@@ -102,7 +102,7 @@ The health implications of prolonged exposure to polluted air are severe and wel
                   AI Essay Generator
                 </h1>
                 <p className="text-base text-gray-600 font-semibold mt-1">
-                  ✨ Create professional essays with AI assistance
+                  Create professional essays with AI assistance
                 </p>
               </div>
             </div>
@@ -158,7 +158,7 @@ The health implications of prolonged exposure to polluted air are severe and wel
                 </div>
                 <div>
                   <h2 className="text-2xl font-black text-gray-900">Essay Configuration</h2>
-                  <p className="text-sm text-gray-600 font-semibold mt-1">🚀 Fill in the details to generate your masterpiece</p>
+                  <p className="text-sm text-gray-600 font-semibold mt-1">Fill in the details to generate your masterpiece</p>
                 </div>
               </div>
             </div>
@@ -178,7 +178,7 @@ The health implications of prolonged exposure to polluted air are severe and wel
                   className={`w-full px-5 py-4 border-2 rounded-2xl shadow-lg focus:ring-4 focus:ring-violet-100 focus:border-violet-500 outline-none transition-all duration-300 font-semibold placeholder-gray-400 bg-white text-gray-900 hover:shadow-xl transform hover:-translate-y-0.5 ${
                     errors.topic ? 'border-red-400 bg-red-50 ring-4 ring-red-100' : 'border-gray-200 hover:border-violet-300'
                   }`}
-                  placeholder="✨ e.g., Climate change and its global impact"
+                  placeholder="e.g., Climate change and its global impact"
                 />
                 {errors.topic && (
                   <div className="flex items-center gap-2 text-sm text-red-600 font-bold bg-red-50 px-3 py-2 rounded-lg animate-shake">
@@ -216,7 +216,7 @@ The health implications of prolonged exposure to polluted air are severe and wel
                   </div>
                 )}
                 <div className="bg-gradient-to-r from-blue-50 to-cyan-50 px-4 py-3 rounded-xl border border-blue-200">
-                  <p className="text-xs text-blue-700 font-bold">💡 Recommended: 300-1000 words for most essays</p>
+                  <p className="text-xs text-blue-700 font-bold">Recommended: 300-1000 words for most essays</p>
                 </div>
               </div>
 
@@ -233,11 +233,11 @@ The health implications of prolonged exposure to polluted air are severe and wel
                     {...register('tone')} 
                     className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl shadow-lg focus:ring-4 focus:ring-pink-100 focus:border-pink-500 outline-none transition-all duration-300 font-semibold bg-white text-gray-900 hover:border-pink-300 hover:shadow-xl transform hover:-translate-y-0.5"
                   >
-                    <option value="academic" className="font-semibold">🎓 Academic</option>
-                    <option value="formal" className="font-semibold">👔 Formal</option>
-                    <option value="informal" className="font-semibold">💬 Conversational</option>
-                    <option value="persuasive" className="font-semibold">🎯 Persuasive</option>
-                    <option value="creative" className="font-semibold">🎨 Creative</option>
+                    <option value="academic" className="font-semibold">Academic</option>
+                    <option value="formal" className="font-semibold">Formal</option>
+                    <option value="informal" className="font-semibold">Conversational</option>
+                    <option value="persuasive" className="font-semibold">Persuasive</option>
+                    <option value="creative" className="font-semibold">Creative</option>
                   </select>
                 </div>
 
@@ -252,9 +252,9 @@ The health implications of prolonged exposure to polluted air are severe and wel
                     {...register('level')} 
                     className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl shadow-lg focus:ring-4 focus:ring-orange-100 focus:border-orange-500 outline-none transition-all duration-300 font-semibold bg-white text-gray-900 hover:border-orange-300 hover:shadow-xl transform hover:-translate-y-0.5"
                   >
-                    <option value="beginner" className="font-semibold">🏫 High School</option>
-                    <option value="intermediate" className="font-semibold">🎓 Undergraduate</option>
-                    <option value="advanced" className="font-semibold">👨‍🎓 Graduate</option>
+                    <option value="beginner" className="font-semibold">High School</option>
+                    <option value="intermediate" className="font-semibold">Undergraduate</option>
+                    <option value="advanced" className="font-semibold">Graduate</option>
                   </select>
                 </div>
               </div>
@@ -287,7 +287,7 @@ The health implications of prolonged exposure to polluted air are severe and wel
                         {watchedFields.outlineFirst && <CheckCircle2 className="w-4 h-4 text-white" />}
                       </div>
                       <div>
-                        <label className="text-base font-black text-gray-900 cursor-pointer">📋 Generate outline first</label>
+                        <label className="text-base font-black text-gray-900 cursor-pointer">Generate outline first</label>
                         <p className="text-sm text-gray-600 font-medium mt-1">Create a structured outline before writing</p>
                       </div>
                     </div>
@@ -295,23 +295,23 @@ The health implications of prolonged exposure to polluted air are severe and wel
                 </div>
 
                 <div className="space-y-4">
-                  <label className="block text-sm font-black text-gray-900">📚 Citation Style</label>
+                  <label className="block text-sm font-black text-gray-900">Citation Style</label>
                   <select 
                     {...register('citations')} 
                     className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl shadow-lg focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 outline-none transition-all duration-300 font-semibold bg-white text-gray-900 hover:border-indigo-300 hover:shadow-xl transform hover:-translate-y-0.5"
                   >
-                    <option value="none" className="font-semibold">🚫 No citations</option>
-                    <option value="apa" className="font-semibold">📖 APA Style</option>
-                    <option value="mla" className="font-semibold">📝 MLA Style</option>
+                    <option value="none" className="font-semibold">No citations</option>
+                    <option value="apa" className="font-semibold">APA Style</option>
+                    <option value="mla" className="font-semibold">MLA Style</option>
                   </select>
                 </div>
 
                 <div className="space-y-4">
-                  <label className="block text-sm font-black text-gray-900">💭 Additional Instructions</label>
+                  <label className="block text-sm font-black text-gray-900">Additional Instructions</label>
                   <textarea
                     {...register('extras')}
                     className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl shadow-lg focus:ring-4 focus:ring-purple-100 focus:border-purple-500 outline-none transition-all duration-300 resize-none font-semibold placeholder-gray-400 bg-white text-gray-900 hover:border-purple-300 hover:shadow-xl transform hover:-translate-y-0.5"
-                    placeholder="✨ Any specific requirements or focus areas..."
+                    placeholder="Any specific requirements or focus areas..."
                     rows={4}
                   />
                 </div>
@@ -333,7 +333,7 @@ The health implications of prolonged exposure to polluted air are severe and wel
                 ) : (
                   <>
                     <Wand2 className="w-6 h-6" />
-                    ✨ Generate Essay
+                    Generate Essay
                     <Zap className="w-5 h-5 animate-pulse" />
                   </>
                 )}
@@ -353,24 +353,45 @@ The health implications of prolonged exposure to polluted air are severe and wel
                       </div>
                       <div>
                         <h2 className="text-2xl font-black text-gray-900">Generated Essay</h2>
-                        <p className="text-sm text-gray-600 font-semibold">🎉 Your masterpiece is ready!</p>
+                        <p className="text-sm text-gray-600 font-semibold">Your masterpiece is ready!</p>
                       </div>
                     </div>
-                    <button
-                      onClick={resetForm}
-                      className="px-5 py-3 text-sm text-gray-700 font-bold hover:text-gray-900 border-2 border-gray-200 rounded-xl hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                    >
-                      🔄 New Essay
-                    </button>
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => {
+                          import("jspdf").then(jsPDF => {
+                            const doc = new jsPDF.jsPDF();
+                            const outlineText = preview.outline?.length
+                              ? "Outline:\n" + preview.outline.map((o, i) => `${i + 1}. ${o}`).join("\n") + "\n\n"
+                              : "";
+                            doc.setFontSize(12);
+                            doc.text(outlineText + preview.essay, 10, 10, { maxWidth: 190 });
+                            doc.save(`${preview.topic.replace(/\s+/g, "_") || "essay"}.pdf`);
+                          });
+                        }}
+                        className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl hover:from-indigo-600 hover:to-purple-700 transition-all duration-200 transform hover:-translate-y-0.5 hover:scale-105"
+                        title="Download as PDF"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={resetForm}
+                        className="px-5 py-3 text-sm text-gray-700 font-bold hover:text-gray-900 border-2 border-gray-200 rounded-xl hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                      >
+                        New Essay
+                      </button>
+                    </div>
 
                   </div>
                   <div className="flex items-center gap-4 mt-4 text-sm font-bold">
                     <span className="bg-white/80 px-4 py-2 rounded-xl shadow-md border border-emerald-200">
-                      📊 ~{preview.essay.split(/\s+/).filter(Boolean).length} words
+                      ~{preview.essay.split(/\s+/).filter(Boolean).length} words
                     </span>
                     <span className="text-gray-400">•</span>
                     <span className="bg-gradient-to-r from-emerald-100 to-teal-100 px-4 py-2 rounded-xl shadow-md border border-emerald-200">
-                      🎯 Target: {preview.wordCount}
+                      Target: {preview.wordCount}
                     </span>
                   </div>
                 </div>
@@ -412,22 +433,6 @@ The health implications of prolonged exposure to polluted air are severe and wel
                       {preview.essay}
                     </div>
                   </div>
-                  <button
-  onClick={() => {
-    import("jspdf").then(jsPDF => {
-      const doc = new jsPDF.jsPDF();
-      const outlineText = preview.outline?.length
-        ? "Outline:\n" + preview.outline.map((o, i) => `${i + 1}. ${o}`).join("\n") + "\n\n"
-        : "";
-      doc.setFontSize(12);
-      doc.text(outlineText + preview.essay, 10, 10, { maxWidth: 190 });
-      doc.save(`${preview.topic.replace(/\s+/g, "_") || "essay"}.pdf`);
-    });
-  }}
-  className="mt-6 w-full px-5 py-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
->
-  ⬇️ Download as PDF
-</button>
 
                 </div>
               </>
@@ -442,9 +447,9 @@ The health implications of prolonged exposure to polluted air are severe and wel
                       <Sparkles className="w-4 h-4 text-white" />
                     </div>
                   </div>
-                  <h3 className="text-2xl font-black text-gray-900 mb-4">🚀 Ready to Generate</h3>
+                  <h3 className="text-2xl font-black text-gray-900 mb-4">Ready to Generate</h3>
                   <p className="text-gray-600 max-w-sm font-semibold leading-relaxed">
-                    Fill out the configuration form and click <span className="font-black text-violet-600">Generate Essay</span> to create your AI-powered masterpiece! ✨
+                    Fill out the configuration form and click <span className="font-black text-violet-600">Generate Essay</span> to create your AI-powered masterpiece!
                   </p>
                 </div>
               </div>
