@@ -19,6 +19,11 @@
   }
 }
 
+/* Extra base styling */
+html, body {
+  height: 100%;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
