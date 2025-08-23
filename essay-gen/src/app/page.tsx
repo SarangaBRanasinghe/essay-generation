@@ -362,6 +362,7 @@ The health implications of prolonged exposure to polluted air are severe and wel
                     >
                       🔄 New Essay
                     </button>
+
                   </div>
                   <div className="flex items-center gap-4 mt-4 text-sm font-bold">
                     <span className="bg-white/80 px-4 py-2 rounded-xl shadow-md border border-emerald-200">
@@ -411,6 +412,23 @@ The health implications of prolonged exposure to polluted air are severe and wel
                       {preview.essay}
                     </div>
                   </div>
+                  <button
+  onClick={() => {
+    import("jspdf").then(jsPDF => {
+      const doc = new jsPDF.jsPDF();
+      const outlineText = preview.outline?.length
+        ? "Outline:\n" + preview.outline.map((o, i) => `${i + 1}. ${o}`).join("\n") + "\n\n"
+        : "";
+      doc.setFontSize(12);
+      doc.text(outlineText + preview.essay, 10, 10, { maxWidth: 190 });
+      doc.save(`${preview.topic.replace(/\s+/g, "_") || "essay"}.pdf`);
+    });
+  }}
+  className="mt-6 w-full px-5 py-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
+>
+  ⬇️ Download as PDF
+</button>
+
                 </div>
               </>
             ) : (
