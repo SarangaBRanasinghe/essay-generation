@@ -7,9 +7,14 @@ import { useState } from 'react';
 import type { z } from 'zod';
 
 type EssayInput = z.infer<typeof essaySchema>;
+type Preview = EssayInput & {
+  essay: string;
+  outline?: string[];
+};
 
 export default function Home() {
-  const [preview, setPreview] = useState<EssayInput | null>(null);
+  const [preview, setPreview] = useState<Preview | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } =
     useForm<z.output<typeof essaySchema>>({
@@ -22,10 +27,40 @@ export default function Home() {
       },
     });
 
-  const onSubmit = (data: Partial<EssayInput>) => {
-    // zodResolver ensures all required fields are present
-    const validData = essaySchema.parse(data);
-    setPreview(validData);
+  const onSubmit = async (data: EssayInput) => {
+    setIsGenerating(true);
+    try {
+      const res = await fetch('/api/essay', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Failed to generate essay');
+      }
+
+      const result = await res.json();
+      
+      setPreview({
+        ...data, // spread all form data
+        essay: result.essay,
+        outline: result.outline,
+      });
+
+    } catch (err: unknown) {
+      console.error('Essay generation error:', err);
+      if (err instanceof Error) {
+        alert(err.message || 'Something went wrong!');
+      } else {
+        alert('Something went wrong!');
+      }
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   return (
@@ -47,7 +82,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-6 py-8">
+      <div className="max-w-6xl mx-auto px-6 py-8">
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Form Section */}
           <div className="bg-white rounded-2xl shadow-xl border border-slate-200/50 overflow-hidden">
@@ -191,10 +226,10 @@ export default function Home() {
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || isGenerating}
                 className="w-full px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-4 focus:ring-blue-200 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
               >
-                {isSubmitting ? (
+                {(isSubmitting || isGenerating) ? (
                   <div className="flex items-center justify-center space-x-2">
                     <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -214,56 +249,48 @@ export default function Home() {
             </form>
           </div>
 
-          {/* Preview Section */}
+          {/* Results Section */}
           {preview ? (
             <div className="bg-white rounded-2xl shadow-xl border border-slate-200/50 overflow-hidden">
               <div className="bg-gradient-to-r from-emerald-600 to-teal-600 px-8 py-6">
-                <h2 className="text-xl font-semibold text-white">Configuration Preview</h2>
-                <p className="text-emerald-100 text-sm mt-1">Review your essay settings</p>
+                <h2 className="text-xl font-semibold text-white">Generated Essay</h2>
+                <p className="text-emerald-100 text-sm mt-1">Your AI-generated essay</p>
               </div>
-              <div className="p-8">
-                <div className="space-y-4">
-                  <div className="flex items-start justify-between p-4 bg-slate-50 rounded-xl">
-                    <span className="text-sm font-medium text-slate-600">Topic:</span>
-                    <span className="text-sm text-slate-800 font-medium text-right flex-1 ml-4">{preview.topic}</span>
-                  </div>
-                  <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
-                    <span className="text-sm font-medium text-slate-600">Word Count:</span>
-                    <span className="text-sm text-slate-800 font-medium">{preview.wordCount.toLocaleString()} words</span>
-                  </div>
-                  <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
-                    <span className="text-sm font-medium text-slate-600">Tone:</span>
-                    <span className="text-sm text-slate-800 font-medium capitalize">{preview.tone}</span>
-                  </div>
-                  <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
-                    <span className="text-sm font-medium text-slate-600">Level:</span>
-                    <span className="text-sm text-slate-800 font-medium capitalize">{preview.level}</span>
-                  </div>
-                  <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
-                    <span className="text-sm font-medium text-slate-600">Outline First:</span>
-                    <span className="text-sm text-slate-800 font-medium">
-                      {preview.outlineFirst ? (
-                        <span className="text-green-600 flex items-center space-x-1">
-                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                          </svg>
-                          <span>Yes</span>
-                        </span>
-                      ) : (
-                        <span className="text-slate-500">No</span>
-                      )}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
-                    <span className="text-sm font-medium text-slate-600">Citations:</span>
-                    <span className="text-sm text-slate-800 font-medium uppercase">{preview.citations}</span>
-                  </div>
-                  {preview.extras && (
-                    <div className="p-4 bg-slate-50 rounded-xl">
-                      <span className="text-sm font-medium text-slate-600 block mb-2">Additional Instructions:</span>
-                      <p className="text-sm text-slate-800">{preview.extras}</p>
+              
+              <div className="p-8 max-h-[80vh] overflow-y-auto">
+                {/* Show outline if present */}
+                {preview.outline && preview.outline.length > 0 && (
+                  <div className="mb-8">
+                    <h3 className="text-lg font-semibold text-slate-800 mb-4">Outline</h3>
+                    <div className="bg-slate-50 rounded-xl p-6">
+                      <ol className="space-y-2">
+                        {preview.outline.map((item, index) => (
+                          <li key={index} className="text-sm text-slate-700 flex">
+                            <span className="text-blue-600 font-medium mr-2">{index + 1}.</span>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ol>
                     </div>
-                  )}
+                  </div>
+                )}
+                
+                {/* Essay content */}
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-800 mb-4">Essay</h3>
+                  <div className="prose max-w-none">
+                    <div className="whitespace-pre-wrap text-slate-700 leading-relaxed">
+                      {preview.essay}
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Word count info */}
+                <div className="mt-8 pt-6 border-t border-slate-200">
+                  <div className="flex items-center justify-between text-sm text-slate-500">
+                    <span>Word count: ~{preview.essay.split(/\s+/).filter(Boolean).length} words</span>
+                    <span>Target: {preview.wordCount} words</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -276,7 +303,7 @@ export default function Home() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                   </div>
-                  <p className="text-slate-500 text-sm">Fill out the form to see a preview of your essay configuration</p>
+                  <p className="text-slate-500 text-sm">Fill out the form and click Generate Essay to see your AI-generated essay here</p>
                 </div>
               </div>
             </div>

@@ -1,27 +1,63 @@
 import type { EssayInput } from './schema';
 
+export function systemPrompt(input: EssayInput): string {
+  const basePrompt = [
+    'You are an expert essay writing assistant.',
+    'Write original, well-structured essays with clear introductions, body paragraphs, and conclusions.',
+    `Use a ${input.tone} tone and write at a ${input.level} level.`,
+    'Ensure proper paragraph structure with topic sentences and supporting evidence.',
+    'Use varied sentence structures and smooth transitions between ideas.',
+    'Never include meta-commentary about being an AI or the writing process.',
+  ];
 
-export function systemPrompt(): string {
-return [
-'You are an expert essay writing and editing engine.',
-'Write original, non-plagiarized essays with clear structure (intro, body, conclusion).',
-'Meet the requested word count within ±5% tolerance.',
-'Prefer concise sentences, varied transitions, and active voice.',
-'If citations are requested, use the specified style on in-text markers and a short references list with plausible placeholders (no fabrications like fake URLs).',
-'Never include meta commentary about being an AI.',
-].join(' ');
+  // Add citation instructions if needed
+  if (input.citations !== 'none') {
+    basePrompt.push(
+      `Include in-text citations in ${input.citations.toUpperCase()} format where appropriate.`,
+      'Add a brief references section at the end with plausible academic sources.',
+      'Do not fabricate real URLs or specific publication details.'
+    );
+  }
+
+  // Add outline instructions if needed
+  if (input.outlineFirst) {
+    basePrompt.push(
+      'Start your response with a brief outline (3-6 main points) using bullet points.',
+      'Follow the outline with the complete essay.',
+      'Separate the outline and essay with a clear line break.'
+    );
+  }
+
+  return basePrompt.join(' ');
 }
 
-
 export function userPrompt(input: EssayInput): string {
-const base = `Topic: "${input.topic}"\n` +
-`Target words: ${input.wordCount} (±5%)\n` +
-`Tone: ${input.tone}; Level: ${input.level}\n` +
-`Structure: introduction, 2–5 body paragraphs, conclusion.\n` +
-(input.citations !== 'none' ? `Citations style: ${input.citations.toUpperCase()} (use in-text markers + a short references list).\n` : '') +
-(input.outlineFirst ? 'Start with a brief outline (3–6 bullets), then the full essay.\n' : '') +
-(input.extras ? `Extra constraints: ${input.extras}\n` : '');
+  const prompt = [
+    `Topic: "${input.topic}"`,
+    `Target length: ${input.wordCount} words (aim for ±5% of target)`,
+    `Writing level: ${input.level}`,
+    `Tone: ${input.tone}`,
+  ];
 
+  if (input.citations !== 'none') {
+    prompt.push(`Citations: Use ${input.citations.toUpperCase()} format`);
+  }
 
-return base + '\nReturn only the outline (if requested) and essay, no meta notes.';
+  if (input.extras && input.extras.trim()) {
+    prompt.push(`Additional requirements: ${input.extras.trim()}`);
+  }
+
+  prompt.push(
+    '',
+    'Structure your essay with:',
+    '- An engaging introduction with a clear thesis statement',
+    '- 2-4 well-developed body paragraphs with evidence and analysis',
+    '- A strong conclusion that reinforces your main argument',
+    '',
+    input.outlineFirst 
+      ? 'Please provide a brief outline first, then write the full essay.'
+      : 'Write the complete essay directly.'
+  );
+
+  return prompt.join('\n');
 }
