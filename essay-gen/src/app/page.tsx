@@ -84,8 +84,8 @@ The health implications of prolonged exposure to polluted air are severe and wel
         <div className="absolute top-1/3 right-1/3 w-28 h-28 bg-gradient-to-r from-orange-400 to-pink-400 rounded-full opacity-20 animate-bounce delay-500"></div>
       </div>
 
-      {/* Header */}
-      <header className="relative z-10 bg-white/90 backdrop-blur-xl shadow-2xl border-b border-white/20">
+      {/* Fixed Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl shadow-2xl border-b border-white/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-6">
@@ -102,7 +102,7 @@ The health implications of prolonged exposure to polluted air are severe and wel
                   AI Essay Generator
                 </h1>
                 <p className="text-base text-gray-600 font-semibold mt-1">
-                  ✨ Create professional essays with AI assistance
+                  Create professional essays with AI assistance
                 </p>
               </div>
             </div>
@@ -116,7 +116,8 @@ The health implications of prolonged exposure to polluted air are severe and wel
         </div>
       </header>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      {/* Main content with top padding to account for fixed header */}
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 pt-40">
         {/* Progress Steps */}
         <div className="mb-12">
           <div className="flex items-center justify-center">
@@ -158,7 +159,7 @@ The health implications of prolonged exposure to polluted air are severe and wel
                 </div>
                 <div>
                   <h2 className="text-2xl font-black text-gray-900">Essay Configuration</h2>
-                  <p className="text-sm text-gray-600 font-semibold mt-1">🚀 Fill in the details to generate your masterpiece</p>
+                  <p className="text-sm text-gray-600 font-semibold mt-1">Fill in the details to generate your masterpiece</p>
                 </div>
               </div>
             </div>
@@ -166,7 +167,7 @@ The health implications of prolonged exposure to polluted air are severe and wel
             <div className="p-8 space-y-8">
               {/* Topic Input */}
               <div className="space-y-4 group">
-                <label className="flex items-center gap-3 text-sm font-black text-gray-900">
+                <label className="flex items-center gap-3 text-sm font-semibold text-gray-900">
                   <div className="w-6 h-6 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center">
                     <BookOpen className="w-3 h-3 text-white" />
                   </div>
@@ -175,10 +176,10 @@ The health implications of prolonged exposure to polluted air are severe and wel
                 </label>
                 <input
                   {...register('topic', { required: 'Topic is required' })}
-                  className={`w-full px-5 py-4 border-2 rounded-2xl shadow-lg focus:ring-4 focus:ring-violet-100 focus:border-violet-500 outline-none transition-all duration-300 font-semibold placeholder-gray-400 bg-white text-gray-900 hover:shadow-xl transform hover:-translate-y-0.5 ${
+                  className={`w-full px-5 py-4 border-2 rounded-2xl shadow-lg focus:ring-4 focus:ring-violet-100 focus:border-violet-500 outline-none transition-all duration-300 font-medium placeholder-gray-400 bg-white text-gray-900 hover:shadow-xl transform hover:-translate-y-0.5 ${
                     errors.topic ? 'border-red-400 bg-red-50 ring-4 ring-red-100' : 'border-gray-200 hover:border-violet-300'
                   }`}
-                  placeholder="✨ e.g., Climate change and its global impact"
+                  placeholder="e.g., Climate change and its global impact"
                 />
                 {errors.topic && (
                   <div className="flex items-center gap-2 text-sm text-red-600 font-bold bg-red-50 px-3 py-2 rounded-lg animate-shake">
@@ -190,7 +191,7 @@ The health implications of prolonged exposure to polluted air are severe and wel
 
               {/* Word Count */}
               <div className="space-y-4">
-                <label className="flex items-center gap-3 text-sm font-black text-gray-900">
+                <label className="flex items-center gap-3 text-sm font-semibold text-gray-900">
                   <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-lg flex items-center justify-center">
                     <Target className="w-3 h-3 text-white" />
                   </div>
@@ -204,7 +205,7 @@ The health implications of prolonged exposure to polluted air are severe and wel
                     min: { value: 100, message: 'Minimum 100 words' },
                     max: { value: 5000, message: 'Maximum 5000 words' }
                   })}
-                  className={`w-full px-5 py-4 border-2 rounded-2xl shadow-lg focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all duration-300 font-semibold placeholder-gray-400 bg-white text-gray-900 hover:shadow-xl transform hover:-translate-y-0.5 ${
+                  className={`w-full px-5 py-4 border-2 rounded-2xl shadow-lg focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all duration-300 font-medium placeholder-gray-400 bg-white text-gray-900 hover:shadow-xl transform hover:-translate-y-0.5 ${
                     errors.wordCount ? 'border-red-400 bg-red-50 ring-4 ring-red-100' : 'border-gray-200 hover:border-blue-300'
                   }`}
                   placeholder="500"
@@ -216,46 +217,64 @@ The health implications of prolonged exposure to polluted air are severe and wel
                   </div>
                 )}
                 <div className="bg-gradient-to-r from-blue-50 to-cyan-50 px-4 py-3 rounded-xl border border-blue-200">
-                  <p className="text-xs text-blue-700 font-bold">💡 Recommended: 300-1000 words for most essays</p>
+                  <p className="text-xs text-blue-700 font-bold">Recommended: 300-1000 words for most essays</p>
                 </div>
               </div>
 
               {/* Tone and Level */}
               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-4">
-                  <label className="flex items-center gap-3 text-sm font-black text-gray-900">
+                  <label className="flex items-center gap-3 text-sm font-semibold text-gray-900">
                     <div className="w-6 h-6 bg-gradient-to-br from-pink-500 to-rose-600 rounded-lg flex items-center justify-center">
                       <Palette className="w-3 h-3 text-white" />
                     </div>
                     Writing Tone
                   </label>
-                  <select 
-                    {...register('tone')} 
-                    className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl shadow-lg focus:ring-4 focus:ring-pink-100 focus:border-pink-500 outline-none transition-all duration-300 font-semibold bg-white text-gray-900 hover:border-pink-300 hover:shadow-xl transform hover:-translate-y-0.5"
-                  >
-                    <option value="academic" className="font-semibold">🎓 Academic</option>
-                    <option value="formal" className="font-semibold">👔 Formal</option>
-                    <option value="informal" className="font-semibold">💬 Conversational</option>
-                    <option value="persuasive" className="font-semibold">🎯 Persuasive</option>
-                    <option value="creative" className="font-semibold">🎨 Creative</option>
-                  </select>
+                  <div className="relative">
+                    <select 
+                      {...register('tone')} 
+                      className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl shadow-lg focus:ring-4 focus:ring-pink-100 focus:border-pink-500 outline-none transition-all duration-300 font-medium bg-white text-gray-900 hover:border-pink-300 hover:shadow-xl transform hover:-translate-y-0.5 appearance-none cursor-pointer"
+                    >
+                      <option value="academic" className="font-medium py-2">📚 Academic</option>
+                      <option value="formal" className="font-medium py-2">👔 Formal</option>
+                      <option value="informal" className="font-medium py-2">💬 Conversational</option>
+                      <option value="persuasive" className="font-medium py-2">🎯 Persuasive</option>
+                      <option value="creative" className="font-medium py-2">🎨 Creative</option>
+                    </select>
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+                      <div className="w-6 h-6 bg-gradient-to-br from-pink-400 to-rose-500 rounded-lg flex items-center justify-center shadow-lg">
+                        <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="space-y-4">
-                  <label className="flex items-center gap-3 text-sm font-black text-gray-900">
+                  <label className="flex items-center gap-3 text-sm font-semibold text-gray-900">
                     <div className="w-6 h-6 bg-gradient-to-br from-orange-500 to-amber-600 rounded-lg flex items-center justify-center">
                       <GraduationCap className="w-3 h-3 text-white" />
                     </div>
                     Complexity Level
                   </label>
-                  <select 
-                    {...register('level')} 
-                    className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl shadow-lg focus:ring-4 focus:ring-orange-100 focus:border-orange-500 outline-none transition-all duration-300 font-semibold bg-white text-gray-900 hover:border-orange-300 hover:shadow-xl transform hover:-translate-y-0.5"
-                  >
-                    <option value="beginner" className="font-semibold">🏫 High School</option>
-                    <option value="intermediate" className="font-semibold">🎓 Undergraduate</option>
-                    <option value="advanced" className="font-semibold">👨‍🎓 Graduate</option>
-                  </select>
+                  <div className="relative">
+                    <select 
+                      {...register('level')} 
+                      className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl shadow-lg focus:ring-4 focus:ring-orange-100 focus:border-orange-500 outline-none transition-all duration-300 font-medium bg-white text-gray-900 hover:border-orange-300 hover:shadow-xl transform hover:-translate-y-0.5 appearance-none cursor-pointer"
+                    >
+                      <option value="beginner" className="font-medium py-2">🎓 High School</option>
+                      <option value="intermediate" className="font-medium py-2">🏛️ Undergraduate</option>
+                      <option value="advanced" className="font-medium py-2">🎖️ Graduate</option>
+                    </select>
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+                      <div className="w-6 h-6 bg-gradient-to-br from-orange-400 to-amber-500 rounded-lg flex items-center justify-center shadow-lg">
+                        <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -287,7 +306,7 @@ The health implications of prolonged exposure to polluted air are severe and wel
                         {watchedFields.outlineFirst && <CheckCircle2 className="w-4 h-4 text-white" />}
                       </div>
                       <div>
-                        <label className="text-base font-black text-gray-900 cursor-pointer">📋 Generate outline first</label>
+                        <label className="text-base font-black text-gray-900 cursor-pointer">Generate outline first</label>
                         <p className="text-sm text-gray-600 font-medium mt-1">Create a structured outline before writing</p>
                       </div>
                     </div>
@@ -295,23 +314,42 @@ The health implications of prolonged exposure to polluted air are severe and wel
                 </div>
 
                 <div className="space-y-4">
-                  <label className="block text-sm font-black text-gray-900">📚 Citation Style</label>
-                  <select 
-                    {...register('citations')} 
-                    className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl shadow-lg focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 outline-none transition-all duration-300 font-semibold bg-white text-gray-900 hover:border-indigo-300 hover:shadow-xl transform hover:-translate-y-0.5"
-                  >
-                    <option value="none" className="font-semibold">🚫 No citations</option>
-                    <option value="apa" className="font-semibold">📖 APA Style</option>
-                    <option value="mla" className="font-semibold">📝 MLA Style</option>
-                  </select>
+                  <label className="flex items-center gap-3 text-sm font-semibold text-gray-900">
+                    <div className="w-6 h-6 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
+                      <FileText className="w-3 h-3 text-white" />
+                    </div>
+                    Citation Style
+                  </label>
+                  <div className="relative">
+                    <select 
+                      {...register('citations')} 
+                      className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl shadow-lg focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 outline-none transition-all duration-300 font-medium bg-white text-gray-900 hover:border-indigo-300 hover:shadow-xl transform hover:-translate-y-0.5 appearance-none cursor-pointer"
+                    >
+                      <option value="none" className="font-medium py-2">No citations</option>
+                      <option value="apa" className="font-medium py-2">APA Style</option>
+                      <option value="mla" className="font-medium py-2">MLA Style</option>
+                    </select>
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+                      <div className="w-6 h-6 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-lg flex items-center justify-center shadow-lg">
+                        <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="space-y-4">
-                  <label className="block text-sm font-black text-gray-900">💭 Additional Instructions</label>
+                  <label className="flex items-center gap-3 text-sm font-semibold text-gray-900">
+                    <div className="w-6 h-6 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-lg flex items-center justify-center">
+                      <span className="text-white text-xs">✏️</span>
+                    </div>
+                    Additional Instructions
+                  </label>
                   <textarea
                     {...register('extras')}
-                    className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl shadow-lg focus:ring-4 focus:ring-purple-100 focus:border-purple-500 outline-none transition-all duration-300 resize-none font-semibold placeholder-gray-400 bg-white text-gray-900 hover:border-purple-300 hover:shadow-xl transform hover:-translate-y-0.5"
-                    placeholder="✨ Any specific requirements or focus areas..."
+                    className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl shadow-lg focus:ring-4 focus:ring-purple-100 focus:border-purple-500 outline-none transition-all duration-300 resize-none font-medium placeholder-gray-400 bg-white text-gray-900 hover:border-purple-300 hover:shadow-xl transform hover:-translate-y-0.5"
+                    placeholder="Any specific requirements or focus areas..."
                     rows={4}
                   />
                 </div>
@@ -333,7 +371,7 @@ The health implications of prolonged exposure to polluted air are severe and wel
                 ) : (
                   <>
                     <Wand2 className="w-6 h-6" />
-                    ✨ Generate Essay
+                    Generate Essay
                     <Zap className="w-5 h-5 animate-pulse" />
                   </>
                 )}
@@ -353,24 +391,45 @@ The health implications of prolonged exposure to polluted air are severe and wel
                       </div>
                       <div>
                         <h2 className="text-2xl font-black text-gray-900">Generated Essay</h2>
-                        <p className="text-sm text-gray-600 font-semibold">🎉 Your masterpiece is ready!</p>
+                        <p className="text-sm text-gray-600 font-semibold">Your masterpiece is ready!</p>
                       </div>
                     </div>
-                    <button
-                      onClick={resetForm}
-                      className="px-5 py-3 text-sm text-gray-700 font-bold hover:text-gray-900 border-2 border-gray-200 rounded-xl hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                    >
-                      🔄 New Essay
-                    </button>
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => {
+                          import("jspdf").then(jsPDF => {
+                            const doc = new jsPDF.jsPDF();
+                            const outlineText = preview.outline?.length
+                              ? "Outline:\n" + preview.outline.map((o, i) => `${i + 1}. ${o}`).join("\n") + "\n\n"
+                              : "";
+                            doc.setFontSize(12);
+                            doc.text(outlineText + preview.essay, 10, 10, { maxWidth: 190 });
+                            doc.save(`${preview.topic.replace(/\s+/g, "_") || "essay"}.pdf`);
+                          });
+                        }}
+                        className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl hover:from-indigo-600 hover:to-purple-700 transition-all duration-200 transform hover:-translate-y-0.5 hover:scale-105"
+                        title="Download as PDF"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={resetForm}
+                        className="px-5 py-3 text-sm text-gray-700 font-bold hover:text-gray-900 border-2 border-gray-200 rounded-xl hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                      >
+                        New Essay
+                      </button>
+                    </div>
 
                   </div>
-                  <div className="flex items-center gap-4 mt-4 text-sm font-bold">
-                    <span className="bg-white/80 px-4 py-2 rounded-xl shadow-md border border-emerald-200">
-                      📊 ~{preview.essay.split(/\s+/).filter(Boolean).length} words
+                  <div className="flex items-center gap-4 mt-4 text-base font-black">
+                    <span className="bg-white px-5 py-3 rounded-xl shadow-lg border-2 border-emerald-300 text-gray-800">
+                      ~{preview.essay.split(/\s+/).filter(Boolean).length} words
                     </span>
-                    <span className="text-gray-400">•</span>
-                    <span className="bg-gradient-to-r from-emerald-100 to-teal-100 px-4 py-2 rounded-xl shadow-md border border-emerald-200">
-                      🎯 Target: {preview.wordCount}
+                    <span className="text-gray-500 text-xl">•</span>
+                    <span className="bg-gradient-to-r from-emerald-100 to-teal-100 px-5 py-3 rounded-xl shadow-lg border-2 border-emerald-300 text-gray-800">
+                      Target: {preview.wordCount}
                     </span>
                   </div>
                 </div>
@@ -412,22 +471,6 @@ The health implications of prolonged exposure to polluted air are severe and wel
                       {preview.essay}
                     </div>
                   </div>
-                  <button
-  onClick={() => {
-    import("jspdf").then(jsPDF => {
-      const doc = new jsPDF.jsPDF();
-      const outlineText = preview.outline?.length
-        ? "Outline:\n" + preview.outline.map((o, i) => `${i + 1}. ${o}`).join("\n") + "\n\n"
-        : "";
-      doc.setFontSize(12);
-      doc.text(outlineText + preview.essay, 10, 10, { maxWidth: 190 });
-      doc.save(`${preview.topic.replace(/\s+/g, "_") || "essay"}.pdf`);
-    });
-  }}
-  className="mt-6 w-full px-5 py-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
->
-  ⬇️ Download as PDF
-</button>
 
                 </div>
               </>
@@ -442,9 +485,9 @@ The health implications of prolonged exposure to polluted air are severe and wel
                       <Sparkles className="w-4 h-4 text-white" />
                     </div>
                   </div>
-                  <h3 className="text-2xl font-black text-gray-900 mb-4">🚀 Ready to Generate</h3>
+                  <h3 className="text-2xl font-black text-gray-900 mb-4">Ready to Generate</h3>
                   <p className="text-gray-600 max-w-sm font-semibold leading-relaxed">
-                    Fill out the configuration form and click <span className="font-black text-violet-600">Generate Essay</span> to create your AI-powered masterpiece! ✨
+                    Fill out the configuration form and click <span className="font-black text-violet-600">Generate Essay</span> to create your AI-powered masterpiece!
                   </p>
                 </div>
               </div>
