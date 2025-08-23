@@ -1,6 +1,13 @@
 export type LLMResult = { outline?: string[]; essay: string };
 export type LLMProvider = 'openai' | 'anthropic';
 
+// --- Gemini response types ---
+type GeminiPart = { text?: string };
+type GeminiContent = { parts?: GeminiPart[] };
+type GeminiCandidate = { content?: GeminiContent };
+type GeminiResponse = { candidates?: GeminiCandidate[] };
+
+
 export async function generateWithOpenAI({
 apiKey,
 model,
@@ -59,34 +66,42 @@ return { outline, essay };
 }
 
 
-export async function generateWithAnthropic({
-apiKey,
-system,
-prompt,
-maxTokens = 2048,
-model = 'claude-3-5-sonnet-20240620'
-}: { apiKey: string; system: string; prompt: string; maxTokens?: number; model?: string }): Promise<LLMResult> {
-const res = await fetch('https://api.anthropic.com/v1/messages', {
-method: 'POST',
-headers: {
-'x-api-key': apiKey,
-'anthropic-version': '2023-06-01',
-'content-type': 'application/json',
-},
-body: JSON.stringify({
-model,
-max_tokens: maxTokens,
-system,
-messages: [{ role: 'user', content: prompt }],
-})
-});
-if (!res.ok) throw new Error(`Anthropic error: ${res.status}`);
-const data = await res.json();
-const text = data?.content?.[0]?.text ?? JSON.stringify(data);
-const [maybeOutline, ...rest] = text.split('\n\n');
-const outline = maybeOutline.startsWith('- ') || maybeOutline.includes('•')
-? maybeOutline.split('\n').map((s: string) => s.replace(/^[-•]\s*/, '').trim()).filter(Boolean)
-: undefined;
-const essay = outline ? rest.join('\n\n').trim() : text.trim();
-return { outline, essay };
+export async function generateWithGemini({
+  apiKey,
+  system,
+  prompt,
+}: {
+  apiKey: string;
+  system: string;
+  prompt: string;
+}) {
+
+
+  if (!apiKey) {
+    throw new Error("Missing Gemini API key");
+  }
+
+const res = await fetch(
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-goog-api-key": apiKey,  // ✅ correct way for Gemini
+    },
+    body: JSON.stringify({
+      contents: [
+        { role: "user", parts: [{ text: `${system}\n\n${prompt}` }] }
+      ]
+    }),
+  }
+);
+
+
+  if (!res.ok) {
+    throw new Error(`Gemini API error: ${res.statusText}`);
+  }
+
+  const data = await res.json();
+  return data;
 }

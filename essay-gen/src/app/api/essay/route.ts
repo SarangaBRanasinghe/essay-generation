@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { essaySchema, EssayInput } from "@/lib/schema";
-import { generateWithOpenAI, generateWithAnthropic } from "@/lib/llm";
+import { generateWithGemini, generateWithOpenAI } from "@/lib/llm";
 
 // POST /api/essay
 export async function POST(req: NextRequest) {
@@ -20,6 +20,8 @@ export async function POST(req: NextRequest) {
 Target length: ${input.wordCount} words.
 Extra instructions: ${input.extras || "None"}.`;
 
+
+
     // Call LLM (OpenAI preferred, fallback Anthropic)
     const result = process.env.OPENAI_API_KEY
       ? await generateWithOpenAI({
@@ -28,12 +30,11 @@ Extra instructions: ${input.extras || "None"}.`;
           system: sys,
           prompt: uprompt,
         })
-      : await generateWithAnthropic({
-          apiKey: process.env.ANTHROPIC_API_KEY!,
-          model: "claude-3-5-sonnet-20240620", // ✅ added model
-          system: sys,
-          prompt: uprompt,
-        });
+      : await generateWithGemini({
+      apiKey: process.env.GEMINI_API_KEY!,
+      system: sys,
+      prompt: uprompt,
+    });
 
     // normalize word count
     const normalized = await ensureWordCount(
@@ -43,10 +44,11 @@ Extra instructions: ${input.extras || "None"}.`;
       sys
     );
 
-    return NextResponse.json({
-      outline: result.outline,
-      essay: normalized,
-    });
+ return NextResponse.json({
+  outline: result.outline ?? [],
+  essay: normalized,
+});
+
   } catch (e) {
     console.error(e);
     return NextResponse.json(

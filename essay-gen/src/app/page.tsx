@@ -6,10 +6,18 @@ import { essaySchema } from '@/lib/schema';
 import { useState } from 'react';
 import type { z } from 'zod';
 
+
 type EssayInput = z.infer<typeof essaySchema>;
+type Preview = EssayInput & {
+  essay: string;
+  outline?: string;
+};
+
+
 
 export default function Home() {
-  const [preview, setPreview] = useState<EssayInput | null>(null);
+  const [preview, setPreview] = useState<Preview | null>(null);
+
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } =
     useForm<z.output<typeof essaySchema>>({
@@ -22,11 +30,41 @@ export default function Home() {
       },
     });
 
-  const onSubmit = (data: Partial<EssayInput>) => {
-    // zodResolver ensures all required fields are present
-    const validData = essaySchema.parse(data);
-    setPreview(validData);
-  };
+ const onSubmit = async (data: EssayInput) => {
+  try {
+    const res = await fetch('/api/essay', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!res.ok) throw new Error('Failed to generate essay');
+
+    const result = await res.json();
+ setPreview({
+  topic: data.topic,
+  wordCount: data.wordCount,
+  tone: data.tone,
+  level: data.level,
+  outlineFirst: data.outlineFirst,
+  citations: data.citations,
+  extras: data.extras,
+  essay: result.essay,       // ❌ not in EssayInput
+  outline: result.outline,   // ❌ not in EssayInput
+});
+
+  } catch (err: unknown) {
+    console.error(err);
+    if (err instanceof Error) {
+      alert(err.message || 'Something went wrong!');
+    } else {
+      alert('Something went wrong!');
+    }
+  }
+};
+
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
