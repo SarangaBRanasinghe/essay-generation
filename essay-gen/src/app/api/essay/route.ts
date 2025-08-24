@@ -41,8 +41,9 @@ export async function POST(req: NextRequest) {
         result = await generateWithOpenAI({
           apiKey: process.env.OPENAI_API_KEY,
           model: process.env.MODEL_FALLBACK || "gpt-4o-mini",
-          system: system,
-          prompt: prompt,
+          system ,
+          prompt ,
+          wordCount: input.wordCount,
         });
       } catch (openAIError) {
         console.log("OpenAI failed, trying Gemini fallback:", openAIError);
@@ -50,8 +51,9 @@ export async function POST(req: NextRequest) {
           console.log("Falling back to Gemini API");
           result = await generateWithGemini({
             apiKey: process.env.GEMINI_API_KEY,
-            system: system,
-            prompt: prompt,
+            system ,
+            prompt ,
+            wordCount: input.wordCount,
           });
         } else {
           throw openAIError; // Re-throw if no fallback available
@@ -61,8 +63,9 @@ export async function POST(req: NextRequest) {
       console.log("Using Gemini API");
       result = await generateWithGemini({
         apiKey: process.env.GEMINI_API_KEY,
-        system: system,
-        prompt: prompt,
+        system ,
+        prompt ,
+        wordCount: input.wordCount,
       });
     } else {
       throw new Error("No API key found. Please set OPENAI_API_KEY or GEMINI_API_KEY in your .env.local file");
@@ -150,6 +153,7 @@ async function ensureWordCount(
         model: process.env.MODEL_FALLBACK || "gpt-4o-mini",
         system: system + " Focus on precise word count adjustment.",
         prompt: adjustPrompt,
+        wordCount: target,
       });
       
       const adjustedCount = countWords(result.essay);
