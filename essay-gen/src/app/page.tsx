@@ -74,6 +74,153 @@ The health implications of prolonged exposure to polluted air are severe and wel
     setActiveStep(1);
   };
 
+  // Professional PDF generation function with Material Design principles
+  const generatePDF = async () => {
+    if (!preview) return;
+
+    try {
+      // Dynamic import of jsPDF
+      const { jsPDF } = await import('jspdf');
+      const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
+
+      const pageWidth = doc.internal.pageSize.width;
+      const pageHeight = doc.internal.pageSize.height;
+      const margin = 20;
+      const contentWidth = pageWidth - (margin * 2);
+      
+      let currentY = margin;
+
+      // Header with Material Design styling
+      doc.setFillColor(103, 58, 183); // Material Purple 500
+      doc.rect(0, 0, pageWidth, 60, 'F');
+      
+      // Title
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(24);
+      doc.setFont('helvetica', 'bold');
+      const titleLines = doc.splitTextToSize(preview.topic, contentWidth - 20);
+      doc.text(titleLines, margin + 10, 25);
+      
+      // Subtitle
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'normal');
+      doc.text('AI Generated Essay', margin + 10, 40);
+
+      // Essay metadata
+      doc.setFontSize(10);
+      const metadata = `${preview.tone.charAt(0).toUpperCase() + preview.tone.slice(1)} • ${preview.level.charAt(0).toUpperCase() + preview.level.slice(1)} Level • ${preview.essay.split(/\s+/).filter(Boolean).length} words`;
+      doc.text(metadata, margin + 10, 50);
+
+      currentY = 80; // Start content after header
+
+      // Add outline if exists
+      if (preview.outline && preview.outline.length > 0) {
+        // Outline header
+        doc.setTextColor(63, 81, 181); // Material Indigo 500
+        doc.setFontSize(16);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Essay Outline', margin, currentY);
+        currentY += 15;
+
+        // Outline content
+        doc.setTextColor(66, 66, 66);
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'normal');
+        
+        preview.outline.forEach((item, index) => {
+          if (currentY > pageHeight - 40) {
+            doc.addPage();
+            currentY = margin;
+          }
+          
+          const outlineText = `${index + 1}. ${item}`;
+          const outlineLines = doc.splitTextToSize(outlineText, contentWidth - 10);
+          doc.text(outlineLines, margin + 5, currentY);
+          currentY += outlineLines.length * 6;
+        });
+        
+        currentY += 15; // Space after outline
+      }
+
+      // Essay content header
+      if (currentY > pageHeight - 60) {
+        doc.addPage();
+        currentY = margin;
+      }
+
+      doc.setTextColor(63, 81, 181); // Material Indigo 500
+      doc.setFontSize(16);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Essay Content', margin, currentY);
+      currentY += 15;
+
+      // Essay body
+      doc.setTextColor(33, 33, 33);
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'normal');
+      
+      const paragraphs = preview.essay.split('\n\n');
+      
+      paragraphs.forEach((paragraph) => {
+        if (paragraph.trim()) {
+          const lines = doc.splitTextToSize(paragraph.trim(), contentWidth);
+          
+          // Check if we need a new page
+          if (currentY + (lines.length * 6) > pageHeight - margin) {
+            doc.addPage();
+            currentY = margin;
+          }
+          
+          doc.text(lines, margin, currentY);
+          currentY += lines.length * 6 + 8; // Line height + paragraph spacing
+        }
+      });
+
+      // Footer on last page
+      const totalPages = doc.internal.pages.length - 1;
+      for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i);
+        
+        // Footer line
+        doc.setDrawColor(224, 224, 224);
+        doc.setLineWidth(0.5);
+        doc.line(margin, pageHeight - 25, pageWidth - margin, pageHeight - 25);
+        
+        // Footer text
+        doc.setTextColor(117, 117, 117);
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'normal');
+        
+        const date = new Date().toLocaleDateString();
+        doc.text(`Generated on ${date}`, margin, pageHeight - 15);
+        
+        const pageText = `Page ${i} of ${totalPages}`;
+        const pageTextWidth = doc.getTextWidth(pageText);
+        doc.text(pageText, pageWidth - margin - pageTextWidth, pageHeight - 15);
+      }
+
+      // Save the PDF
+      const fileName = preview.topic.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_').substring(0, 50) || 'essay';
+      doc.save(`${fileName}.pdf`);
+
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      // Fallback to simple text download
+      const content = `${preview.topic}\n\n${preview.outline?.map((item, i) => `${i + 1}. ${item}`).join('\n') || ''}\n\n${preview.essay}`;
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${preview.topic.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_') || 'essay'}.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-violet-100 via-sky-50 to-cyan-100 relative overflow-hidden">
       {/* Animated background elements */}
@@ -396,17 +543,7 @@ The health implications of prolonged exposure to polluted air are severe and wel
                     </div>
                     <div className="flex items-center gap-3">
                       <button
-                        onClick={() => {
-                          import("jspdf").then(jsPDF => {
-                            const doc = new jsPDF.jsPDF();
-                            const outlineText = preview.outline?.length
-                              ? "Outline:\n" + preview.outline.map((o, i) => `${i + 1}. ${o}`).join("\n") + "\n\n"
-                              : "";
-                            doc.setFontSize(12);
-                            doc.text(outlineText + preview.essay, 10, 10, { maxWidth: 190 });
-                            doc.save(`${preview.topic.replace(/\s+/g, "_") || "essay"}.pdf`);
-                          });
-                        }}
+                        onClick={generatePDF}
                         className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl hover:from-indigo-600 hover:to-purple-700 transition-all duration-200 transform hover:-translate-y-0.5 hover:scale-105"
                         title="Download as PDF"
                       >
