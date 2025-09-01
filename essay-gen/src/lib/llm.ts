@@ -12,12 +12,15 @@ export async function generateWithOpenAI({
   model,
   system,
   prompt,
+   wordCount, 
 }: {
   apiKey: string;
   model: string;
   system: string;
   prompt: string;
+  wordCount: number;
 }): Promise<LLMResult> {
+   const estimatedTokens = Math.min(Math.round(wordCount * 2), 4000);
   const res = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {
@@ -31,7 +34,7 @@ export async function generateWithOpenAI({
         { role: 'user', content: prompt },
       ],
       temperature: 0.7,
-      max_tokens: 4000,
+      max_tokens: estimatedTokens,
     })
   });
 
@@ -68,7 +71,7 @@ export async function generateWithOpenAI({
           outlineLines.push(line.replace(/^\d+\.\s*|^[-•*]\s*/, ''));
         }
       } else if (foundOutline && line.match(/^\d+\.|^[-•*]/)) {
-        outlineLines.push(line.replace(/^\d+\.\s*|^[-•*]\s*/, ''));
+        outlineLines.push(line.replace(/^\d+\.\s*|^[-••*]\s*/, ''));
       } else if (foundOutline && line.length > 20 && !line.match(/^\d+\.|^[-•*]/)) {
         essayStart = i;
         break;
@@ -89,14 +92,20 @@ export async function generateWithGemini({
   apiKey,
   system,
   prompt,
+  wordCount,
 }: {
   apiKey: string;
   system: string;
   prompt: string;
+  wordCount: number;
 }): Promise<LLMResult> {
   if (!apiKey) {
     throw new Error("Missing Gemini API key");
   }
+
+  // Estimate tokens for Gemini
+const estimatedTokens = Math.min(Math.round(wordCount * 2), 4000);
+
 
   const res = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
@@ -114,7 +123,7 @@ export async function generateWithGemini({
         ],
         generationConfig: {
           temperature: 0.7,
-          maxOutputTokens: 4000,
+          maxOutputTokens: estimatedTokens,
         }
       }),
     }

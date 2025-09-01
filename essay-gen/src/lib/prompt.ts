@@ -1,5 +1,6 @@
 import type { EssayInput } from './schema';
 
+// prompt.ts
 export function systemPrompt(input: EssayInput): string {
   const basePrompt = [
     'You are an expert essay writing assistant.',
@@ -8,9 +9,9 @@ export function systemPrompt(input: EssayInput): string {
     'Ensure proper paragraph structure with topic sentences and supporting evidence.',
     'Use varied sentence structures and smooth transitions between ideas.',
     'Never include meta-commentary about being an AI or the writing process.',
+    `IMPORTANT: The essay must be approximately ${input.wordCount} words, staying strictly within ±10% of this length. Count words, not characters.`
   ];
 
-  // Add citation instructions if needed
   if (input.citations !== 'none') {
     basePrompt.push(
       `Include in-text citations in ${input.citations.toUpperCase()} format where appropriate.`,
@@ -19,10 +20,9 @@ export function systemPrompt(input: EssayInput): string {
     );
   }
 
-  // Add outline instructions if needed
   if (input.outlineFirst) {
     basePrompt.push(
-      'Start your response with a brief outline (3-6 main points) using bullet points.',
+      'Start your response with a brief outline (3–6 main points) using bullet points.',
       'Follow the outline with the complete essay.',
       'Separate the outline and essay with a clear line break.'
     );
@@ -34,7 +34,7 @@ export function systemPrompt(input: EssayInput): string {
 export function userPrompt(input: EssayInput): string {
   const prompt = [
     `Topic: "${input.topic}"`,
-    `Target length: ${input.wordCount} words (aim for ±5% of target)`,
+    `Target length: ${input.wordCount} words (strictly ±10%)`,
     `Writing level: ${input.level}`,
     `Tone: ${input.tone}`,
   ];
@@ -51,7 +51,7 @@ export function userPrompt(input: EssayInput): string {
     '',
     'Structure your essay with:',
     '- An engaging introduction with a clear thesis statement',
-    '- 2-4 well-developed body paragraphs with evidence and analysis',
+    '- 2–4 well-developed body paragraphs with evidence and analysis',
     '- A strong conclusion that reinforces your main argument',
     '',
     input.outlineFirst 
