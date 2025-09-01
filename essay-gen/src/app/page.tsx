@@ -2,18 +2,8 @@
 
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
+import { EssayInput } from '@/lib/schema'; // Import the real EssayInput type
 import { CheckCircle2, FileText, Loader2, Settings, Sparkles, BookOpen, Target, Palette, GraduationCap, Zap, Star, Wand2, Menu, X } from 'lucide-react';
-
-// Mock schema types - replace with your actual schema
-type EssayInput = {
-  topic: string;
-  wordCount: number;
-  tone: 'academic' | 'formal' | 'informal' | 'persuasive' | 'creative';
-  level: 'beginner' | 'intermediate' | 'advanced';
-  outlineFirst: boolean;
-  citations: 'none' | 'apa' | 'mla';
-  extras?: string;
-};
 
 type Preview = EssayInput & {
   essay: string;
@@ -35,7 +25,18 @@ export default function ImprovedEssayGenerator() {
       wordCount: 500,
       topic: ''
     },
-    mode: 'onChange'
+    mode: 'onChange',
+    resolver: async (data) => {
+      // Transform wordCount to number
+      const transformedData = {
+        ...data,
+        wordCount: Number(data.wordCount), // Convert string to number
+      };
+      return {
+        values: transformedData,
+        errors: {},
+      };
+    },
   });
 
   const watchedFields = watch();
@@ -44,30 +45,41 @@ export default function ImprovedEssayGenerator() {
   const onSubmit = async (data: EssayInput) => {
     setIsGenerating(true);
     setActiveStep(2);
-    
-    // Simulate API call
-    setTimeout(() => {
-      const mockResult = {
+
+    try {
+      // Ensure wordCount is a number before sending
+      const payload = {
         ...data,
-        essay: `Air pollution, a pervasive global challenge, poses a significant threat to human health and the environment. Its impact extends far beyond localized smog events, affecting ecosystems, economies, and ultimately, the well-being of billions. This essay will examine the multifaceted nature of air pollution, exploring its sources, health consequences, and potential mitigation strategies.
-
-The sheer scale of air pollution's impact is undeniable. From the densely populated megacities of Asia to the seemingly pristine landscapes of the Arctic, the presence of pollutants in the atmosphere is a global phenomenon. Particulate matter, ozone, nitrogen oxides, and sulfur dioxide, among others, contaminate the air we breathe, impacting air quality worldwide. This widespread contamination necessitates a comprehensive understanding of its sources and effects to develop effective solutions.
-
-Industrial activities represent one of the most significant contributors to air pollution. Manufacturing processes, power generation, and chemical production release vast quantities of pollutants into the atmosphere. The burning of fossil fuels for energy production is particularly problematic, as it releases not only carbon dioxide but also a complex mixture of harmful substances. Similarly, transportation systems, particularly those relying on internal combustion engines, contribute substantially to urban air pollution through exhaust emissions.
-
-The health implications of prolonged exposure to polluted air are severe and well-documented. Respiratory diseases, cardiovascular problems, and even certain cancers have been linked to poor air quality. Vulnerable populations, including children, elderly individuals, and those with pre-existing health conditions, face heightened risks. The economic burden of air pollution-related healthcare costs further underscores the urgency of addressing this issue.`,
-        outline: [
-          "Introduction to air pollution as a global challenge",
-          "Scale and scope of air pollution worldwide", 
-          "Industrial sources and fossil fuel combustion",
-          "Health impacts and vulnerable populations",
-          "Economic costs and mitigation strategies",
-          "Conclusion and call for action"
-        ]
+        wordCount: Number(data.wordCount), // Double-check conversion
       };
-      setPreview(mockResult);
+
+      const response = await fetch('/api/essay', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to generate essay');
+      }
+
+      const result = await response.json();
+
+      setPreview({
+        ...payload,
+        essay: result.essay,
+        outline: result.outline,
+      });
+    } catch (error) {
+      console.error('Error generating essay:', error);
+      alert(error instanceof Error ? error.message : 'An unexpected error occurred. Please check your console and API keys.');
+      setActiveStep(1);
+    } finally {
       setIsGenerating(false);
-    }, 3000);
+    }
   };
 
   const resetForm = () => {
