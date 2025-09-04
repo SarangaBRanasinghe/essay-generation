@@ -81,7 +81,7 @@ export default function ImprovedEssayGenerator() {
         title: 'Essay Generated!',
         text: `Your essay on "${payload.topic}" has been successfully generated.`,
         confirmButtonText: 'View Essay',
-        confirmButtonColor: '#7C3AED', // Violet-600
+        confirmButtonColor: '#7C3AED',  
         timer: 3000,
         timerProgressBar: true,
         showConfirmButton: true,
@@ -99,7 +99,7 @@ export default function ImprovedEssayGenerator() {
         title: 'Error',
         text: error instanceof Error ? error.message : 'An unexpected error occurred. Please check your console and API keys.',
         confirmButtonText: 'Try Again',
-        confirmButtonColor: '#EF4444', // Red-500
+        confirmButtonColor: '#EF4444',  
         customClass: {
           popup: 'rounded-2xl',
           confirmButton: 'px-6 py-3 text-lg font-semibold',
@@ -143,13 +143,13 @@ export default function ImprovedEssayGenerator() {
       // Title
       doc.setTextColor(255, 255, 255);
       doc.setFontSize(24);
-      doc.setFont('helvetica', 'bold');
+      doc.setFont('poppins', 'bold');
       const titleLines = doc.splitTextToSize(preview.topic, contentWidth - 20);
       doc.text(titleLines, margin + 10, 25);
       
       // Subtitle
       doc.setFontSize(12);
-      doc.setFont('helvetica', 'normal');
+      doc.setFont('poppins', 'normal');
       doc.text('AI Generated Essay', margin + 10, 40);
 
       // Essay metadata
@@ -164,14 +164,14 @@ export default function ImprovedEssayGenerator() {
         // Outline header
         doc.setTextColor(63, 81, 181); // Material Indigo 500
         doc.setFontSize(16);
-        doc.setFont('helvetica', 'bold');
+        doc.setFont('poppins', 'bold');
         doc.text('Essay Outline', margin, currentY);
         currentY += 15;
 
         // Outline content
         doc.setTextColor(66, 66, 66);
         doc.setFontSize(11);
-        doc.setFont('helvetica', 'normal');
+        doc.setFont('poppins', 'normal');
         
         preview.outline.forEach((item, index) => {
           if (currentY > pageHeight - 40) {
@@ -196,14 +196,14 @@ export default function ImprovedEssayGenerator() {
 
       doc.setTextColor(63, 81, 181); // Material Indigo 500
       doc.setFontSize(16);
-      doc.setFont('helvetica', 'bold');
+      doc.setFont('poppins', 'bold');
       doc.text('Essay Content', margin, currentY);
       currentY += 15;
 
       // Essay body
       doc.setTextColor(33, 33, 33);
       doc.setFontSize(11);
-      doc.setFont('helvetica', 'normal');
+      doc.setFont('poppins', 'normal');
       
       const paragraphs = preview.essay.split('\n\n');
       
