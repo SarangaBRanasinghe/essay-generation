@@ -2,7 +2,8 @@
 
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
-import { EssayInput } from '@/lib/schema'; // Import the real EssayInput type
+import { EssayInput } from '@/lib/schema';
+import Swal from 'sweetalert2'; // Import SweetAlert2
 import { CheckCircle2, FileText, Loader2, Settings, Sparkles, BookOpen, Target, Palette, GraduationCap, Zap, Star, Wand2, Menu, X } from 'lucide-react';
 
 type Preview = EssayInput & {
@@ -73,9 +74,37 @@ export default function ImprovedEssayGenerator() {
         essay: result.essay,
         outline: result.outline,
       });
+
+      // Show success SweetAlert2
+      await Swal.fire({
+        icon: 'success',
+        title: 'Essay Generated!',
+        text: `Your essay on "${payload.topic}" has been successfully generated.`,
+        confirmButtonText: 'View Essay',
+        confirmButtonColor: '#7C3AED', // Violet-600
+        timer: 3000,
+        timerProgressBar: true,
+        showConfirmButton: true,
+        customClass: {
+          popup: 'rounded-2xl',
+          confirmButton: 'px-6 py-3 text-lg font-semibold',
+        },
+      });
+
     } catch (error) {
       console.error('Error generating essay:', error);
-      alert(error instanceof Error ? error.message : 'An unexpected error occurred. Please check your console and API keys.');
+      // Show error SweetAlert2
+      await Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error instanceof Error ? error.message : 'An unexpected error occurred. Please check your console and API keys.',
+        confirmButtonText: 'Try Again',
+        confirmButtonColor: '#EF4444', // Red-500
+        customClass: {
+          popup: 'rounded-2xl',
+          confirmButton: 'px-6 py-3 text-lg font-semibold',
+        },
+      });
       setActiveStep(1);
     } finally {
       setIsGenerating(false);
