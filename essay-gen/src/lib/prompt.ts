@@ -1,6 +1,5 @@
 import type { EssayInput } from './schema';
 
-// prompt.ts
 export function systemPrompt(input: EssayInput): string {
   const basePrompt = [
     'You are an expert essay writing assistant.',
