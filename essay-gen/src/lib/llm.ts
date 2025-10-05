@@ -12,7 +12,7 @@ export async function generateWithOpenAI({
   model,
   system,
   prompt,
-   wordCount, 
+  wordCount,
 }: {
   apiKey: string;
   model: string;
@@ -20,7 +20,9 @@ export async function generateWithOpenAI({
   prompt: string;
   wordCount: number;
 }): Promise<LLMResult> {
-   const estimatedTokens = Math.min(Math.round(wordCount * 2), 4000);
+  // Increase token estimation - roughly 1.5 tokens per word, plus buffer
+  const estimatedTokens = Math.min(Math.round(wordCount * 1.5 + 500), 8000);
+  
   const res = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {
@@ -52,40 +54,7 @@ export async function generateWithOpenAI({
     throw new Error('No content received from OpenAI');
   }
 
-  // Parse outline and essay from response
-  const lines = text.split('\n');
-  let outline: string[] | undefined;
-  let essayStart = 0;
-
-  // Check if response starts with outline
-  if (text.includes('Outline:') || lines.some((line: string) => line.match(/^\d+\.|^[-•*]/))) {
-    const outlineLines: string[] = [];
-    let foundOutline = false;
-    
-    for (let i = 0; i < lines.length; i++) {
-      const line: string = lines[i].trim();
-      
-      if (line.toLowerCase().includes('outline') || line.match(/^\d+\.|^[-•*]/)) {
-        foundOutline = true;
-        if (!line.toLowerCase().includes('outline')) {
-          outlineLines.push(line.replace(/^\d+\.\s*|^[-•*]\s*/, ''));
-        }
-      } else if (foundOutline && line.match(/^\d+\.|^[-•*]/)) {
-        outlineLines.push(line.replace(/^\d+\.\s*|^[-••*]\s*/, ''));
-      } else if (foundOutline && line.length > 20 && !line.match(/^\d+\.|^[-•*]/)) {
-        essayStart = i;
-        break;
-      }
-    }
-    
-    if (outlineLines.length > 0) {
-      outline = outlineLines.filter(Boolean);
-    }
-  }
-
-  const essay = lines.slice(essayStart).join('\n').trim();
-  
-  return { outline, essay };
+  return parseResponse(text);
 }
 
 export async function generateWithGemini({
@@ -103,12 +72,14 @@ export async function generateWithGemini({
     throw new Error("Missing Gemini API key");
   }
 
-  // Estimate tokens for Gemini
-const estimatedTokens = Math.min(Math.round(wordCount * 2), 4000);
+  // More generous token estimation for Gemini
+  const estimatedTokens = Math.min(Math.round(wordCount * 2 + 1000), 8000);
 
-
+  // Use correct Gemini model from env or default to 1.5-flash
+  const model = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+  
   const res = await fetch(
-   `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+    `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${apiKey}`,
     {
       method: "POST",
       headers: {
@@ -124,46 +95,83 @@ const estimatedTokens = Math.min(Math.round(wordCount * 2), 4000);
         generationConfig: {
           temperature: 0.7,
           maxOutputTokens: estimatedTokens,
-        }
+          topP: 0.95,
+          topK: 40,
+        },
+        safetySettings: [
+          {
+            category: "HARM_CATEGORY_HARASSMENT",
+            threshold: "BLOCK_NONE"
+          },
+          {
+            category: "HARM_CATEGORY_HATE_SPEECH",
+            threshold: "BLOCK_NONE"
+          },
+          {
+            category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+            threshold: "BLOCK_NONE"
+          },
+          {
+            category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+            threshold: "BLOCK_NONE"
+          }
+        ]
       }),
     }
   );
 
   if (!res.ok) {
     const errorText = await res.text();
+    console.error('Gemini API Error:', errorText);
     throw new Error(`Gemini API error: ${res.status} - ${errorText}`);
   }
 
   const data: GeminiResponse = await res.json();
-  const text: string = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
 
   if (!text) {
-    throw new Error('No content received from Gemini');
+    console.error('Gemini response:', JSON.stringify(data, null, 2));
+    throw new Error('No content received from Gemini. The model may have blocked the request.');
   }
 
-  // --- NEW: declare lines, outline, essayStart ---
+  return parseResponse(text);
+}
+
+// Shared parser for both OpenAI and Gemini responses
+function parseResponse(text: string): LLMResult {
   const lines: string[] = text.split('\n');
   let outline: string[] | undefined;
   let essayStart = 0;
 
   // Check if response starts with outline
-  if (text.includes('Outline:') || lines.some((line: string) => line.match(/^\d+\.|^[-•*]/))) {
+  if (text.includes('Outline:') || text.includes('outline:') || 
+      lines.some((line: string) => line.trim().match(/^\d+\.|^[-•*]/))) {
     const outlineLines: string[] = [];
     let foundOutline = false;
 
     for (let i = 0; i < lines.length; i++) {
       const line: string = lines[i].trim();
 
+      // Detect outline start
       if (line.toLowerCase().includes('outline') || line.match(/^\d+\.|^[-•*]/)) {
         foundOutline = true;
-        if (!line.toLowerCase().includes('outline')) {
+        // Don't include the "Outline:" header itself
+        if (!line.toLowerCase().includes('outline') && line.length > 0) {
           outlineLines.push(line.replace(/^\d+\.\s*|^[-•*]\s*/, ''));
         }
-      } else if (foundOutline && line.match(/^\d+\.|^[-•*]/)) {
+      } 
+      // Continue collecting outline items
+      else if (foundOutline && line.match(/^\d+\.|^[-•*]/)) {
         outlineLines.push(line.replace(/^\d+\.\s*|^[-•*]\s*/, ''));
-      } else if (foundOutline && line.length > 20 && !line.match(/^\d+\.|^[-•*]/)) {
+      } 
+      // End of outline when we hit substantial text
+      else if (foundOutline && line.length > 30 && !line.match(/^\d+\.|^[-•*]/)) {
         essayStart = i;
         break;
+      }
+      // Skip empty lines
+      else if (foundOutline && line.length === 0) {
+        continue;
       }
     }
 
@@ -172,7 +180,12 @@ const estimatedTokens = Math.min(Math.round(wordCount * 2), 4000);
     }
   }
 
-  const essay = lines.slice(essayStart).join('\n').trim();
+  // Extract essay content
+  const essay = lines.slice(essayStart)
+    .join('\n')
+    .trim()
+    // Remove any remaining "Essay:" or "Content:" headers
+    .replace(/^(Essay|Content|Introduction):\s*/i, '');
 
   return { outline, essay };
 }

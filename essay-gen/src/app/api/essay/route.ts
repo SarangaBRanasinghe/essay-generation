@@ -95,28 +95,28 @@ export async function POST(req: NextRequest) {
     });
     
   } catch (e) {
-    console.error("Error in /api/essay:", e);
-    
-    // Return more specific error messages
-    if (e instanceof Error) {
-      if (e.message.includes("API key")) {
-        return NextResponse.json(
-          { error: "API configuration error. Please check your environment variables." },
-          { status: 500 }
-        );
-      } else if (e.message.includes("quota") || e.message.includes("billing")) {
-        return NextResponse.json(
-          { error: "API quota exceeded. Please check your API billing status." },
-          { status: 429 }
-        );
-      }
-    }
-    
+  console.error("Error in /api/essay:", e);
+  console.error("Full error object:", JSON.stringify(e, null, 2));
+  
+  // Log environment status
+  console.log("API Keys status:", {
+    hasOpenAI: !!process.env.OPENAI_API_KEY,
+    hasGemini: !!process.env.GEMINI_API_KEY
+  });
+  
+  // Return more specific error messages
+  if (e instanceof Error) {
     return NextResponse.json(
-      { error: e instanceof Error ? e.message : "Failed to generate essay" },
+      { error: e.message },
       { status: 500 }
     );
   }
+  
+  return NextResponse.json(
+    { error: "Failed to generate essay" },
+    { status: 500 }
+  );
+}
 }
 
 // Helper functions
