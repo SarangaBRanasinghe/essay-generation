@@ -4,8 +4,24 @@ export type LLMProvider = 'openai' | 'gemini';
 // --- Gemini response types ---
 type GeminiPart = { text?: string };
 type GeminiContent = { parts?: GeminiPart[] };
-type GeminiCandidate = { content?: GeminiContent };
-type GeminiResponse = { candidates?: GeminiCandidate[] };
+type GeminiCandidate = { 
+  content?: GeminiContent;
+  finishReason?: string;
+  safetyRatings?: Array<{
+    category: string;
+    probability: string;
+  }>;
+};
+type GeminiResponse = { 
+  candidates?: GeminiCandidate[];
+  promptFeedback?: {
+    blockReason?: string;
+    safetyRatings?: Array<{
+      category: string;
+      probability: string;
+    }>;
+  };
+};
 
 export async function generateWithOpenAI({
   apiKey,
@@ -75,8 +91,8 @@ export async function generateWithGemini({
   // More generous token estimation for Gemini
   const estimatedTokens = Math.min(Math.round(wordCount * 2 + 1000), 8000);
 
-  // Use correct Gemini model from env or default to 1.5-flash
-  const model = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+  // Use correct Gemini model from env or default
+  const model = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
   
   const res = await fetch(
     `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${apiKey}`,
@@ -101,19 +117,19 @@ export async function generateWithGemini({
         safetySettings: [
           {
             category: "HARM_CATEGORY_HARASSMENT",
-            threshold: "BLOCK_NONE"
+            threshold: "BLOCK_ONLY_HIGH"
           },
           {
             category: "HARM_CATEGORY_HATE_SPEECH",
-            threshold: "BLOCK_NONE"
+            threshold: "BLOCK_ONLY_HIGH"
           },
           {
             category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-            threshold: "BLOCK_NONE"
+            threshold: "BLOCK_ONLY_HIGH"
           },
           {
             category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-            threshold: "BLOCK_NONE"
+            threshold: "BLOCK_ONLY_HIGH"
           }
         ]
       }),
@@ -127,11 +143,35 @@ export async function generateWithGemini({
   }
 
   const data: GeminiResponse = await res.json();
-  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  
+  // Log the full response for debugging
+  console.log('Gemini full response:', JSON.stringify(data, null, 2));
+  
+  // Check if the prompt itself was blocked
+  if (data.promptFeedback?.blockReason) {
+    throw new Error(`Gemini blocked the prompt. Reason: ${data.promptFeedback.blockReason}. Try a different topic or use OpenAI.`);
+  }
+  
+  const candidate = data?.candidates?.[0];
+  const text = candidate?.content?.parts?.[0]?.text || '';
 
   if (!text) {
+    // Check if content was blocked
+    const finishReason = candidate?.finishReason;
+    if (finishReason === 'SAFETY') {
+      const safetyRatings = candidate?.safetyRatings || [];
+      const blockedCategories = safetyRatings
+        .filter(r => r.probability === 'HIGH' || r.probability === 'MEDIUM')
+        .map(r => r.category)
+        .join(', ');
+      
+      throw new Error(
+        `Gemini blocked this content due to safety filters${blockedCategories ? `: ${blockedCategories}` : ''}. Try a different topic or use OpenAI instead.`
+      );
+    }
+    
     console.error('Gemini response:', JSON.stringify(data, null, 2));
-    throw new Error('No content received from Gemini. The model may have blocked the request.');
+    throw new Error(`No content received from Gemini. Finish reason: ${finishReason || 'unknown'}`);
   }
 
   return parseResponse(text);
